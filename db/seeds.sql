@@ -42,4 +42,4 @@ values
 ("Bird", "Person", 9, 1),
 ("Black", "Widow", 1, 5);
 
-select * from employee
+select * from employee;
