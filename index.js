@@ -129,12 +129,14 @@ function viewEmployee() {
 
 // 'Add a Department',
 function addDepartment() {
-    inquirer.prompt([{
-        type: 'input',
-        name: 'newDepartment',
-        message: "What's the name of your new Department?"
-    }]).then(function (answer) {
-        connection.query('INSERT INTO department SET ?', {name: answer.newDepartment});
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'newDepartment',
+            message: "What's the name of your new Department?"
+        }
+    ]).then(function (answer) {
+        connection.query('INSERT INTO department SET ?', { name: answer.newDepartment });
         console.log('New Department has been added!')
         viewDepartment();
     });
@@ -142,15 +144,34 @@ function addDepartment() {
 
 // 'Add a Role',
 function addRole() {
-    inquirer.prompt([{
-        type: 'input',
-        name: 'newRole',
-        message: "What's the name of your new Role?"
-    }]).then(function (answer) {
-        connection.query('INSERT INTO role SET ?', {name: answer.newRole});
-        console.log('New Role has been added!')
-        viewRole();
-    });
+    connection.query('SELECT name, id FROM department', function (err, res) {
+        if (err) throw err;
+        roleChoice = res.map(({ name, id }) => ({ name: name, value: id }))
+        console.log(roleChoice);
+        inquirer.prompt([
+            {
+                type: 'list',
+                name: 'department',
+                message: "Which department does this Role belong to?",
+                choices: roleChoice
+            },
+            {
+                type: 'input',
+                name: 'newRole',
+                message: "What's the name of your new Role?"
+            },
+            {
+                type: 'input',
+                name: 'newSalary',
+                message: "What is the Salary for this Role? (enter a number without commas, ie. 100000)"
+            }
+        ]).then(function (answer) {
+            const args = [answer.newRole, answer.newSalary, answer.department];
+            connection.query('INSERT INTO roles VALUES (?, ?, ?)', args);
+            console.log('New Role has been added!')
+            viewRole();
+        });
+    })
 };
 // 'Add an Employee',
 
