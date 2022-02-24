@@ -36,7 +36,7 @@ function trackEmployee() {
                 'View all Employees',
                 'View employees by Department',
                 'View employees by Manager',
-                'Add a Deparment',
+                'Add a Department',
                 'Add a Role',
                 'Add an Employee',
                 'Update an Employee Role',
@@ -44,13 +44,13 @@ function trackEmployee() {
                 'Delete Department',
                 'Delete Roles',
                 'Delete Employee',
-                'View Budget by Deparment',
+                'View Budget by Department',
                 'Quit'
             ]
     }).then(function (answer) {
         switch (answer.action) {
             case 'View all Departments':
-                viewDeparment();
+                viewDepartment();
                 break;
             case 'View all Employee Roles':
                 viewRole();
@@ -59,15 +59,12 @@ function trackEmployee() {
                 viewEmployee();
                 break;
             case 'View employees by Department':
-                viewEmployeeDeparment();
+                viewEmployeeDepartment();
                 break;
             case 'View employees by Manager':
                 viewEmployeeManager();
                 break;
-            case 'View all Employees':
-                viewEmployee();
-                break;
-            case 'Add a Deparment':
+            case 'Add a Department':
                 addDepartment();
                 break;
             case 'Add a Role':
@@ -83,7 +80,7 @@ function trackEmployee() {
                 updateManager();
                 break;
             case 'Delete Department':
-                deleteDeparment();
+                deleteDepartment();
                 break;
             case 'Delete Manager':
                 deleteManager();
@@ -96,7 +93,64 @@ function trackEmployee() {
                 break; 
         }
     })
-}
+};
+
+// 'View all Departments',
+function viewDepartment() {
+    var query = 'SELECT * FROM department';
+    connection.query(query, function(err, res) {
+        if(err)throw err;
+        console.log('There are ' + res.length + ' in your company')
+        console.table('All Departments:', res);
+        options();
+    })
+};
+
+// 'View all Employee Roles',
+function viewRole(){
+    var query = 'SELECT * FROM roles'; 
+    connection.query(query, function(err, res){
+        if (err) throw err; 
+        console.log('There are '+ res.length + 'positions currently in your company')
+    })
+};
+
+// 'View all Employees',
+function viewEmployee() {
+    var query = 'SELECT * FROM employee';
+    connection.query(query, function(err, res) {
+        if (err) throw err;
+        console.log('There are ' + res.length + ' employees in your company');
+        console.table('All Employees:', res); 
+        options();
+    })
+};
+
+// 'View employees by Department',
+function viewEmployeeDepartment(){
+    var query = ''
+};
+// 'View employees by Manager',
+
+// 'Add a Department',
+
+// 'Add a Role',
+
+// 'Add an Employee',
+
+// 'Update an Employee Role',
+
+// 'Update a Manager',
+
+// 'Delete Department',
+
+// 'Delete Roles',
+
+// 'Delete Employee',
+
+// 'View Budget by Department',
+
+// 'Quit'
 
 function endTrackEmployee() {
     connection.end(function (err) {
