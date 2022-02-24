@@ -147,7 +147,7 @@ function addRole() {
     connection.query('SELECT name, id FROM department', function (err, res) {
         if (err) throw err;
         roleChoice = res.map(({ name, id }) => ({ name: name, value: id }))
-        console.log(roleChoice);
+        // console.log(roleChoice);
         inquirer.prompt([
             {
                 type: 'list',
@@ -166,12 +166,14 @@ function addRole() {
                 message: "What is the Salary for this Role? (enter a number without commas, ie. 100000)"
             }
         ]).then(function (answer) {
+            console.log('New Role has been added!')
             const args = [answer.newRole, answer.newSalary, answer.department];
             connection.query('INSERT INTO roles VALUES (?, ?, ?)', args);
-            console.log('New Role has been added!')
-            viewRole();
-        });
-    })
+        }).then(() => {
+            console.log("lets go back to main menu")
+            trackEmployee(); 
+        })
+    });
 };
 // 'Add an Employee',
 
