@@ -184,8 +184,8 @@ function addRole() {
 function addEmployee() {
     connection.query('SELECT title, id FROM roles', function (err, res) {
         roleChoice = res.map(({ title, id }) => ({ name: title, value: id }))
-        //managerList = 'SELECT first_name, last_name FROM employee WHERE manager_id IS NULL'
-        // "list of managers (people with null as manager id)"
+        //managerList = 'SELECT first_name, last_name FROM employee WHERE manager_id IS NOT NULL'
+        // "list of managers (people with values in manager id)"
         //What would be the best choice in adding managerList here??
         // Should I  Join employee + roles? or, 
         // Can you refer to 2 separte tables within 1 connection.query? 
