@@ -218,8 +218,7 @@ function addEmployee() {
             //     type: 'list',
             //     name: 'manager',
             //     message: "Who is the Manager for this new Employee?",
-            //     choices:
-            //         'No Manager', managerList,
+            //     choices: ['No Manager', managerList],
             //     default: 'No Manager'
             // },
         ]).then(function (answer) {
