@@ -146,7 +146,7 @@ function addDepartment() {
 function addRole() {
     connection.query('SELECT name, id FROM department', function (err, res) {
         deptChoice = res.map(({ name, id }) => ({ name: name, value: id }))
-        console.log(deptChoice);
+        // console.log(deptChoice);
         inquirer.prompt([
             {
                 type: 'list',
@@ -165,8 +165,16 @@ function addRole() {
                 message: "What is the Salary for this Role? (enter a number without commas, ie. 100000)"
             }
         ]).then(function (answer) {
-            const args = [answer.newRole, answer.newSalary, answer.department];
-            connection.query('INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)', args, viewRole, trackEmployee);
+            connection.query(
+                'INSERT INTO roles SET?',
+                {
+                    title: answer.newRole,
+                    salary: answer.newSalary,
+                    department_id: answer.department
+                },
+                viewRole,
+                trackEmployee
+            );
             console.log('New Role has been added!');
         });
     });
@@ -176,7 +184,12 @@ function addRole() {
 function addEmployee() {
     connection.query('SELECT title, id FROM roles', function (err, res) {
         roleChoice = res.map(({ title, id }) => ({ name: title, value: id }))
-        console.log(roleChoice);
+        //managerList = 'SELECT first_name, last_name FROM employee WHERE manager_id IS NULL'
+        // "list of managers (people with null as manager id)"
+        //What would be the best choice in adding managerList here??
+        // Should I  Join employee + roles? or, 
+        // Can you refer to 2 separte tables within 1 connection.query? 
+        // console.log(roleChoice);
         inquirer.prompt([
             {
                 type: 'input',
@@ -191,34 +204,52 @@ function addEmployee() {
                 // validate: ''
             },
             {
-                type: 'input',
-                name: 'managerId',
-                message: "Enter the Employee's Manager ID",
-            },
-            {
                 type: 'list',
                 name: 'employeeRole',
                 message: "What is the new Employee's role?",
                 choices: roleChoice
-            }
+            },
+            {
+                type: 'input', 
+                name: 'managerId',
+                message: "What is the Manager ID of Manager in charge of this new Employee?"
+            },
+            // {
+            //     type: 'list',
+            //     name: 'manager',
+            //     message: "Who is the Manager for this new Employee?",
+            //     choices:
+            //         'No Manager', managerList,
+            //     default: 'No Manager'
+            // },
         ]).then(function (answer) {
-            const args = [answer.firstName, answer.lastName, answer.managerId, answer.employeeRole];
-            connection.query('INSERT INTO employee (first_name, last_name, manager_id, role_id) VALUES (?, ?, ?, ?)', args, viewEmployee, trackEmployee);
+            connection.query(
+                'INSERT INTO employee SET?',
+                {
+                    first_name: answer.firstName,
+                    last_name: answer.lastName,
+                    manager_id: answer.managerId,
+                    role_id: answer.employeeRole
+                },
+                viewEmployee,
+                trackEmployee
+            );
             console.log('New Employee has been added!');
         });
     });
 };
+
 // 'Update an Employee Role',
-function updateEmployeeRole(){
+function updateEmployeeRole() {
     inquirer.prompt([
         {
-            type: 'list', 
+            type: 'list',
             name: 'selectEmployee',
             message: 'Which employee would you like to update?',
             choices: ''
-        }, 
+        },
         {
-            type: 'list', 
+            type: 'list',
             name: 'selectRole',
             message: 'Which role are you assinging to this employee?',
             choices: ''
