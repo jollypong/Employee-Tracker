@@ -31,15 +31,15 @@ select * from roles;
 
 insert into employee (first_name, last_name, role_id, manager_id)
 values 
-("Private", "Bloggins", 16, null), 
-("Duff", "No", 16, null), 
-("Tom", "Hilfiger", 4, null), 
-("Peter", "Parker", 8, null), 
-("Faker", "LeBlanc", 10, 4),
+("Private", "Bloggins", 16, 1), 
+("Duff", "No", 16, 2), 
+("Tom", "Hilfiger", 4, 3), 
+("Peter", "Parker", 8, 4), 
+("Faker", "LeBlanc", 10, 5),
 ("Sarah", "Conor", 10, null),
-("Tony", "Stark", 15, 2), 
-("Rick", "Sanchez", 10, 3), 
-("Bird", "Person", 9, 1),
-("Black", "Widow", 1, 5);
+("Tony", "Stark", 15, null), 
+("Rick", "Sanchez", 10, null), 
+("Bird", "Person", 9, null),
+("Black", "Widow", 1, null);
 
 select * from employee;

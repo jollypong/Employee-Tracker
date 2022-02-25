@@ -72,7 +72,7 @@ function trackEmployee() {
                 addEmployee();
                 break;
             case 'Update an Employee Role':
-                updateEmployee();
+                updateEmployeeRole();
                 break;
             // case 'Update a Manager':
             //     updateManager();
@@ -145,14 +145,14 @@ function addDepartment() {
 // 'Add a Role',
 function addRole() {
     connection.query('SELECT name, id FROM department', function (err, res) {
-        roleChoice = res.map(({ name, id }) => ({ name: name, value: id }))
-        // console.log(roleChoice);
+        deptChoice = res.map(({ name, id }) => ({ name: name, value: id }))
+        console.log(deptChoice);
         inquirer.prompt([
             {
                 type: 'list',
                 name: 'department',
-                message: "Which department does this Role belong to?",
-                choices: roleChoice
+                message: "Which department does this role belong to?",
+                choices: deptChoice
             },
             {
                 type: 'input',
@@ -166,53 +166,75 @@ function addRole() {
             }
         ]).then(function (answer) {
             const args = [answer.newRole, answer.newSalary, answer.department];
-            connection.query('INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)', args, trackEmployee);
-            viewRole();
+            connection.query('INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)', args, viewRole, trackEmployee);
             console.log('New Role has been added!');
         });
     });
 };
+
 // 'Add an Employee',
-function addEmployee(){
-    console.log("made it here!")
+function addEmployee() {
+    connection.query('SELECT title, id FROM roles', function (err, res) {
+        roleChoice = res.map(({ title, id }) => ({ name: title, value: id }))
+        console.log(roleChoice);
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'firstName',
+                message: 'What is the first name of your new Employee?',
+                // validate: ''
+            },
+            {
+                type: 'input',
+                name: 'lastName',
+                message: 'What is the last name of your new Employee?',
+                // validate: ''
+            },
+            {
+                type: 'input',
+                name: 'managerId',
+                message: "Enter the Employee's Manager ID",
+            },
+            {
+                type: 'list',
+                name: 'employeeRole',
+                message: "What is the new Employee's role?",
+                choices: roleChoice
+            }
+        ]).then(function (answer) {
+            const args = [answer.firstName, answer.lastName, answer.managerId, answer.employeeRole];
+            connection.query('INSERT INTO employee (first_name, last_name, manager_id, role_id) VALUES (?, ?, ?, ?)', args, viewEmployee, trackEmployee);
+            console.log('New Employee has been added!');
+        });
+    });
+};
+// 'Update an Employee Role',
+function updateEmployeeRole(){
     inquirer.prompt([
         {
-            type: 'input', 
-            name: 'firstName', 
-            message: 'What is the first name of your new Employee?',
-            validate: ''
-        },
+            type: 'list', 
+            name: 'selectEmployee',
+            message: 'Which employee would you like to update?',
+            choices: ''
+        }, 
         {
-            type: 'input', 
-            name: 'lastName', 
-            message: 'What is the last name of your new Employee?',
-            validate: ''
-        },
-        {
-            type: 'input', 
-            name: 'employeeManager',
-            message: "Enter the Employee's Manager ID", 
-        },
-        {
-            type: 'list',
-            name: 'employeeRole',
-            message: "What is the new Employee's role?",
-            choices: '' 
+            type: 'list', 
+            name: 'selectRole',
+            message: 'Which role are you assinging to this employee?',
+            choices: ''
         }
-    ]).then(function(res){})
+
+    ])
 }
-
-// 'Update an Employee Role',
-
 // BONUS 'Update a Manager',
 
-// BONUS'Delete Department',
+// BONUS 'Delete Department',
 
-// BONUS'Delete Roles',
+// BONUS 'Delete Roles',
 
-// BONUS'Delete Employee',
+// BONUS 'Delete Employee',
 
-// BONUS'View Budget by Department',
+// BONUS 'View Budget by Department',
 
 // 'Quit'
 function endTrackEmployee() {
