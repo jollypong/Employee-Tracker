@@ -32,17 +32,17 @@ function trackEmployee() {
             'View all Departments',
             'View all Employee Roles',
             'View all Employees',
-            'View employees by Department',
-            'View employees by Manager',
+            // 'View employees by Department',
+            // 'View employees by Manager',
             'Add a Department',
             'Add a Role',
             'Add an Employee',
             'Update an Employee Role',
-            'Update a Manager',
-            'Delete Department',
-            'Delete Roles',
-            'Delete Employee',
-            'View Budget by Department',
+            // 'Update a Manager',
+            // 'Delete Department',
+            // 'Delete Roles',
+            // 'Delete Employee',
+            // 'View Budget by Department',
             'Quit'
         ]
     }).then(function (answer) {
@@ -145,7 +145,6 @@ function addDepartment() {
 // 'Add a Role',
 function addRole() {
     connection.query('SELECT name, id FROM department', function (err, res) {
-        if (err) throw err;
         roleChoice = res.map(({ name, id }) => ({ name: name, value: id }))
         // console.log(roleChoice);
         inquirer.prompt([
@@ -166,28 +165,54 @@ function addRole() {
                 message: "What is the Salary for this Role? (enter a number without commas, ie. 100000)"
             }
         ]).then(function (answer) {
-            console.log('New Role has been added!')
             const args = [answer.newRole, answer.newSalary, answer.department];
-            connection.query('INSERT INTO roles VALUES (?, ?, ?)', args);
-        }).then(() => {
-            console.log("lets go back to main menu")
-            trackEmployee(); 
-        })
+            connection.query('INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)', args, trackEmployee);
+            viewRole();
+            console.log('New Role has been added!');
+        });
     });
 };
 // 'Add an Employee',
+function addEmployee(){
+    console.log("made it here!")
+    inquirer.prompt([
+        {
+            type: 'input', 
+            name: 'firstName', 
+            message: 'What is the first name of your new Employee?',
+            validate: ''
+        },
+        {
+            type: 'input', 
+            name: 'lastName', 
+            message: 'What is the last name of your new Employee?',
+            validate: ''
+        },
+        {
+            type: 'input', 
+            name: 'employeeManager',
+            message: "Enter the Employee's Manager ID", 
+        },
+        {
+            type: 'list',
+            name: 'employeeRole',
+            message: "What is the new Employee's role?",
+            choices: '' 
+        }
+    ]).then(function(res){})
+}
 
 // 'Update an Employee Role',
 
-// 'Update a Manager',
+// BONUS 'Update a Manager',
 
-// 'Delete Department',
+// BONUS'Delete Department',
 
-// 'Delete Roles',
+// BONUS'Delete Roles',
 
-// 'Delete Employee',
+// BONUS'Delete Employee',
 
-// 'View Budget by Department',
+// BONUS'View Budget by Department',
 
 // 'Quit'
 function endTrackEmployee() {
