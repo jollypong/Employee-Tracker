@@ -1,6 +1,7 @@
 //import dependencies
 const mysql = require('mysql');
 const inquirer = require('inquirer');
+const { CLIENT_SECURE_CONNECTION } = require('mysql/lib/protocol/constants/client');
 require('console.table'); //required to show table in console
 
 //create connection to sql
@@ -20,10 +21,10 @@ connection.connect(function (err) {
     }
     console.log('Welcome to "Who Works Where?!"');
     console.log("Let's begin looking for our employees!")
-    trackEmployee();
+    mainMenu();
 });
 
-function trackEmployee() {
+function mainMenu() {
     inquirer.prompt({
         type: 'list',
         message: 'Please choose your options',
@@ -72,7 +73,7 @@ function trackEmployee() {
                 addEmployee();
                 break;
             case 'Update an Employee Role':
-                updateEmployeeRole();
+                updateRole();
                 break;
             // case 'Update a Manager':
             //     updateManager();
@@ -87,7 +88,7 @@ function trackEmployee() {
             //     deleteEmployee();
             //     break;
             case 'Quit':
-                endTrackEmployee();
+                endMainMenu();
                 break;
         }
     })
@@ -99,27 +100,26 @@ function viewDepartment() {
     connection.query(query, function (err, res) {
         if (err) throw err;
         console.table('There are ' + res.length + ' departments in your company!', res);
-        trackEmployee();
+        mainMenu();
     })
 };
 
-// 'View all Employee Roles',
+// 'View all Roles',
 function viewRole() {
     var query = 'SELECT * FROM roles';
     connection.query(query, function (err, res) {
         if (err) throw err;
         console.table('There are ' + res.length + 'positions currently in your company', res);
-        trackEmployee();
+        mainMenu();
     })
 };
 
 // 'View all Employees',
 function viewEmployee() {
-    var query = 'SELECT * FROM employee';
-    connection.query(query, function (err, res) {
+    connection.query('SELECT * FROM employee', function (err, res) {
         if (err) throw err;
         console.table('There are ' + res.length + ' employees in your company', res);
-        trackEmployee();
+        mainMenu();
     })
 };
 
@@ -173,7 +173,7 @@ function addRole() {
                     department_id: answer.department
                 },
                 viewRole,
-                trackEmployee
+                mainMenu
             );
             console.log('New Role has been added!');
         });
@@ -183,79 +183,89 @@ function addRole() {
 // 'Add an Employee',
 function addEmployee() {
     connection.query('SELECT title, id FROM roles', function (err, res) {
-        roleChoice = res.map(({ title, id }) => ({ name: title, value: id }))
-        //managerList = 'SELECT first_name, last_name FROM employee WHERE manager_id IS NOT NULL'
-        // "list of managers (people with values in manager id)"
-        //What would be the best choice in adding managerList here??
-        // Should I  Join employee + roles? or, 
-        // Can you refer to 2 separte tables within 1 connection.query? 
+        roleChoice = res.map(({ title, id }) => ({ name: title, value: id }));
         // console.log(roleChoice);
-        inquirer.prompt([
-            {
-                type: 'input',
-                name: 'firstName',
-                message: 'What is the first name of your new Employee?',
-                // validate: ''
-            },
-            {
-                type: 'input',
-                name: 'lastName',
-                message: 'What is the last name of your new Employee?',
-                // validate: ''
-            },
-            {
-                type: 'list',
-                name: 'employeeRole',
-                message: "What is the new Employee's role?",
-                choices: roleChoice
-            },
-            {
-                type: 'input', 
-                name: 'managerId',
-                message: "What is the Manager ID of Manager in charge of this new Employee?"
-            },
-            // {
-            //     type: 'list',
-            //     name: 'manager',
-            //     message: "Who is the Manager for this new Employee?",
-            //     choices: ['No Manager', managerList],
-            //     default: 'No Manager'
-            // },
-        ]).then(function (answer) {
-            connection.query(
-                'INSERT INTO employee SET?',
+        connection.query('SELECT first_name, last_name, id FROM employee WHERE manager_id IS NULL', function (err, res) {
+            // "list of managers (people with no values in manager id)"
+            managerList = res.map(({ first_name, last_name, id }) => ({ name: `${first_name} ${last_name}`, value: id }));
+            // console.log(managerList);
+            inquirer.prompt([
                 {
-                    first_name: answer.firstName,
-                    last_name: answer.lastName,
-                    manager_id: answer.managerId,
-                    role_id: answer.employeeRole
+                    type: 'input',
+                    name: 'firstName',
+                    message: 'What is the first name of your new Employee?',
+                    // validate: ''
                 },
-                viewEmployee,
-                trackEmployee
-            );
-            console.log('New Employee has been added!');
-        });
+                {
+                    type: 'input',
+                    name: 'lastName',
+                    message: 'What is the last name of your new Employee?',
+                    // validate: ''
+                },
+                {
+                    type: 'list',
+                    name: 'employeeRole',
+                    message: "What is the new Employee's role?",
+                    choices: roleChoice,
+                },
+                {
+                    type: 'list',
+                    name: 'manager',
+                    message: "Who is the Manager for this new Employee?",
+                    choices: [...managerList, { name: 'No Manager', value: null }],
+                },
+            ]).then(function (answer) {
+                connection.query(
+                    'INSERT INTO employee SET?',
+                    {
+                        first_name: answer.firstName,
+                        last_name: answer.lastName,
+                        role_id: answer.employeeRole,
+                        manager_id: answer.manager
+                    },
+                    viewEmployee,
+                    mainMenu
+                );
+                console.log('New Employee has been added!');
+            });
+        })
     });
 };
 
 // 'Update an Employee Role',
-function updateEmployeeRole() {
-    inquirer.prompt([
-        {
-            type: 'list',
-            name: 'selectEmployee',
-            message: 'Which employee would you like to update?',
-            choices: ''
-        },
-        {
-            type: 'list',
-            name: 'selectRole',
-            message: 'Which role are you assinging to this employee?',
-            choices: ''
-        }
-
-    ])
-}
+function updateRole() {
+    //employeeList 
+    connection.query('SELECT first_name, last_name, id FROM employee', function (err, res) {
+        employeeList = res.map(({ first_name, last_name, id }) =>
+            ({ name: `${first_name} ${last_name}`, value: id }));
+        //roleList
+        connection.query('SELECT id, title FROM roles', function (err, res) {
+            roleList = res.map(({ id, title }) =>
+                ({ name: title, value: id }));
+            inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'selectEmployee',
+                    message: 'Which employee would you like to update?',
+                    choices: employeeList
+                },
+                {
+                    type: 'list',
+                    name: 'selectRole',
+                    message: 'Which role are you assinging to this employee?',
+                    choices: roleList
+                },
+            ]).then(function (answer) {
+                connection.query(
+                    `UPDATE employee SET role_id = '${role_id = answer.selectRole}' WHERE id = '${answer.selectEmployee}'`,
+                    viewEmployee,
+                    mainMenu
+                );
+                console.log('Employee has been updated!');
+            });
+        });
+    });
+};
 // BONUS 'Update a Manager',
 
 // BONUS 'Delete Department',
@@ -267,7 +277,7 @@ function updateEmployeeRole() {
 // BONUS 'View Budget by Department',
 
 // 'Quit'
-function endTrackEmployee() {
+function endMainMenu() {
     connection.end();
     console.log('Bye! See you again!');
 };

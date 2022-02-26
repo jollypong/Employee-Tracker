@@ -24,12 +24,11 @@ create table employee (
     first_name varchar(30),
     last_name varchar(30),
     role_id int, 
-    foreign key (role_id)
-    references roles(id),
+    foreign key (role_id) references roles(id),
     manager_id int,
-    foreign key (manager_id)
-    references employee(id)
-    on delete cascade
+    foreign key (manager_id) references employee(id)
+    on update cascade 
+    on delete set null
 );
 
 show tables; 

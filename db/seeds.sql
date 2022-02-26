@@ -26,17 +26,16 @@ select * from roles;
 
 insert into employee (first_name, last_name, role_id, manager_id)
 values 
-("Tony", "Stark", 1, 1), 
-("Bruce", "Banner", 2, null), 
-("Steve", "Rogers", 3, 2), 
-("Natasha", "Romanoff", 4, null), 
-("Hawk", "Eye", 5, 3),
-("Thor", "Ragnarok", 6, null),
-("Doctor", "Strange", 7, null), 
-("Loki", "Ragnarok", 8, null), 
-("Star", "Lord", 9, 4),
-("Iam", "Groot", 10, null),
+("Tony", "Stark", 1, null), 
+("Bruce", "Banner", 2, 1), 
+("Steve", "Rogers", 3, null), 
+("Natasha", "Romanoff", 4, 3), 
+("Hawk", "Eye", 5, null),
+("Thor", "Ragnarok", 6, 5),
+("Doctor", "Strange", 7, 5), 
+("Loki", "Ragnarok", 8, 5), 
+("Star", "Lord", 9, null),
+("Iam", "Groot", 10, 9),
 ("Black", "Panther", 11, null);
 
 select * from employee;
--- Am I understanding this table correctly? where manager_id is stating manager of which deparment?
