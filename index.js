@@ -266,6 +266,7 @@ function updateRole() {
         });
     });
 };
+
 // BONUS 'Update a Manager',
 
 // BONUS 'Delete Department',
