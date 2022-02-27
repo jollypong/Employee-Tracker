@@ -133,7 +133,12 @@ function addDepartment() {
         {
             type: 'input',
             name: 'newDepartment',
-            message: "What's the name of your new Department?"
+            message: "What's the name of your new Department?",
+            validate: (input) => {
+                if (input){
+                    return true; 
+                } console.log("Please enter a name")
+            }
         }
     ]).then(function (answer) {
         connection.query('INSERT INTO department SET ?', { name: answer.newDepartment });
@@ -157,12 +162,23 @@ function addRole() {
             {
                 type: 'input',
                 name: 'newRole',
-                message: "What's the name of your new Role?"
+                message: "What's the name of your new Role?",
+                validate: (input) => {
+                    if (input){
+                        return true; 
+                    } console.log("Please enter a name")
+                }
             },
             {
                 type: 'input',
                 name: 'newSalary',
-                message: "What is the Salary for this Role? (enter a number without commas, ie. 100000)"
+                message: "What is the Salary for this Role? (enter a number without signs/symbols ie. 100000)", 
+                validate: (input) => {
+                    if (isNaN(input) === false){
+                        return true; 
+                    }
+                    console.log("Please input a valid Salary");
+                }
             }
         ]).then(function (answer) {
             connection.query(
@@ -194,13 +210,21 @@ function addEmployee() {
                     type: 'input',
                     name: 'firstName',
                     message: 'What is the first name of your new Employee?',
-                    // validate: ''
+                    validate: (input) => {
+                        if (input){
+                            return true; 
+                        } console.log("Please enter a name")
+                    }
                 },
                 {
                     type: 'input',
                     name: 'lastName',
                     message: 'What is the last name of your new Employee?',
-                    // validate: ''
+                    validate: (input) => {
+                        if (input){
+                            return true; 
+                        } console.log("Please enter a name")
+                    }
                 },
                 {
                     type: 'list',
@@ -266,6 +290,7 @@ function updateRole() {
         });
     });
 };
+
 // BONUS 'Update a Manager',
 
 // BONUS 'Delete Department',
