@@ -81,13 +81,13 @@ source seeds.sql;
 
 Then run the index.js file in a different console and start the application by: 
 
-  ```
-    node index.js
-  ```
+```
+node index.js
+```
 
 ## Test
 
-No testing was done for this project please feel free to add the feature or contact me. 
+No testing was done for this project please feel free to add the feature or contact me for collaboration! 
 
 ## Demo
 
@@ -95,7 +95,9 @@ Demo Video available [here]()
 
 ## Screenshot
 ![screenshot1](./Assets/screenshot-mySQL.png)
-![screenshot2](./Assets/screenshot-mySQL2.png)
+![screenshot2](./Assets/TableRelations.png)
+![screenshot3](./Assets/screenshot-mySQL2.png)
+
 
 ## Contribution
 
